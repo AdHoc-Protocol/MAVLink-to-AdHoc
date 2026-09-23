@@ -1,0 +1,20 @@
+# build output
+out/
+*.class
+
+# validation artefacts
+*.branches.txt
+*.log
+
+# editor / IDE
+.idea/
+*.iml
+.vscode/
+
+# scratch files
+*.tmp
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
