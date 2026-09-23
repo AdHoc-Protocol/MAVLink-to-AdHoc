@@ -78,30 +78,37 @@ namespace org.mavlink {
             /**
             Latitude, expressed
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude, expressed
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             Altitude above home
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int relative_alt;
             /**
             Ground X Speed (Latitude, positive north)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vx;
             /**
             Ground Y Speed (Longitude, positive east)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vy;
             /**
             Ground Z Speed (Altitude, positive down)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vz;
             /**
             Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX

@@ -15,6 +15,49 @@ self-contained `.cs` per dialect — ready to be fed to AdHocAgent for code gene
 
 Every generated descriptor has been validated with AdHocAgent's local parse-only mode (see [Validating](#validating-the-output)).
 
+## Before and after
+
+`HEARTBEAT`, the message every MAVLink reader knows, taken from `msgs/minimal.xml` (757 lines) and the
+`AdHoc/minimal.cs` it generates (1 359 lines). Full files: [source](msgs/minimal.xml) —
+[result](AdHoc/minimal.cs).
+
+**MAVLink dialect XML**
+
+```xml
+<message id="0" name="HEARTBEAT">
+  <description>The heartbeat message shows that a system or component is present and responding. …</description>
+  <field type="uint8_t" name="type" enum="MAV_TYPE">Vehicle or component type. …</field>
+  <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. …</field>
+  <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG">System mode bitmap.</field>
+  <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+  <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag.</field>
+  <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, …</field>
+</message>
+```
+
+**AdHoc protocol description**
+
+```csharp
+class HEARTBEAT {
+    public const int mavlink_message_id = 0;   // source identity, not the AdHoc pack id
+    /**
+    Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.).
+    For other components the component type (e.g. camera, gimbal, etc.). …
+    */
+    MAV_TYPE      Type;            // `type` is a keyword in several targets, so the name is brushed
+    MAV_AUTOPILOT autopilot;
+    MAV_MODE_FLAG base_mode;       // the enum is declared [Flags] because MAVLink marks it bitmask
+    uint          custom_mode;
+    MAV_STATE     system_status;
+    byte          mavlink_version;
+    // …doc comments on the remaining fields elided here
+}
+```
+
+The message id moved inside the pack, the `enum=` references became real enum types, and the descriptions became
+doc comments that AdHoc's `KeepDoc` / `SkipDoc` filters can route on. Elsewhere in the same file `time_boot_ms`
+becomes a `Duration` alias and `units="cdegC"` becomes `[Units(SI_Unit.temperature.cdegC)]`.
+
 ## Layout
 
 | Path                                 | Contents                                                                  |
@@ -103,12 +146,34 @@ class MillisecondsSinceBoot : Duration {
 time since boot, with the receiver deciding from its magnitude, so calling it a `DateTime` would assert something
 the protocol does not say.
 
-## Why no varint attributes
+## Varint is the hand edit worth making
 
-MAVLink fields are fixed-width on the wire and the schema states no distribution, only units and an occasional
-UI range. `[A]` / `[V]` / `[X]` would therefore be a guess, and a wrong guess makes the wire **larger**. Where the
-source does state a hard range the converter already bit-packs it through `[MinMax]`. After conversion, the most
-valuable hand edit is to add a varint attribute to the fields whose distribution you actually know.
+How MAVLink packs its own frame has no bearing on this. AdHoc lays out its own packet and is free to varint-encode
+a field MAVLink stores raw, so "MAVLink is fixed-width" decides nothing. What decides is the **physics of the
+field** — where its values actually sit — together with the arithmetic: varint wins while the typical distance
+from the base stays under about two million, and always loses past 268 435 455.
+
+The converter does not guess, because MAVLink states units and an occasional UI range but never a distribution.
+It does two things instead. A hard range is bit-packed through `[MinMax]`. And wherever the units or the field
+name make the shape plain, it leaves the reasoning on the field, so the decision is made where it belongs:
+
+```csharp
+// physics: attitude rate in rad/s, centred on zero -> consider [X]
+[Units(SI_Unit.angle.rad_s)] float rollspeed;
+```
+
+Worked examples from `common.xml`, so the direction is concrete:
+
+| Field | Physics | Verdict |
+|:--|:--|:--|
+| `lat`, `lon` in `degE7` | around 5.6 × 10⁸, systematically large | varint **loses**, leave fixed |
+| `time_usec` | monotonic microseconds since epoch | varint **loses**, leave fixed |
+| `vx`, `vy`, `vz` in `cm/s` | centred on zero, typically small | `[X]` — but the type is already `int16`, so the gain is nil |
+| `alt_ellipsoid`, `relative_alt` in `mm` | `int32`, values near ground level | `[X]` genuinely wins, 4 bytes → 2-3 |
+| `h_acc`, `v_acc`, `vel_acc` in `mm` | `uint32` accuracy estimates, floored at 0, small | `[A]` genuinely wins |
+
+The pattern to look for is a 32- or 64-bit field whose real values are small. That is where AdHoc pays, and only
+you know which of your fields qualify.
 
 ## Type mapping
 

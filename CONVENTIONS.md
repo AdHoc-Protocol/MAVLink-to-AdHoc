@@ -100,22 +100,44 @@ AdHoc's vocabulary, so the reader learns nothing about what AdHoc would do for t
 The reference for this is the `proto2adhoc` reference transformation shipped with the code generator. Read it
 before writing an emitter. Four rules follow from it.
 
-### 1. Carry over what the source knows about the *distribution* of a number
+### 1. Carry over what the source knows about the *physics* of a number
 
-This is AdHoc's headline capability and the thing no other schema language can express. Whenever the source
-states, or its encoding implies, where a number's values sit, say so:
+This is AdHoc's headline capability and the thing no other schema language can express.
 
-| The source says | Emit | Meaning |
+**The source's own wire format is irrelevant here.** AdHoc lays out its own frame, so "the source stores this
+field fixed-width" is never a reason to decline `[A]` / `[V]` / `[X]` — a converter that argues that way has
+confused the input encoding with the output one. What decides the attribute is the **physics of the field**: where
+its values actually sit. In the words of the AdHoc README, *a temperature delta is small, a monotonic counter is
+huge, a remaining-lease counter sits just under its ceiling — and the schema is the only place that can live.*
+
+Sources state that physics more often than they look like they do: in units (`cdegC`, `mV`, `cm/s`, `degE7`), in
+field names and descriptions, in declared ranges, in invalid markers, and in the encoding the source itself chose
+when that choice was a statement about the data (proto `sint32` versus `fixed32` is such a statement).
+
+| What the source tells you about the values | Emit | Meaning |
 |:--|:--|:--|
-| the field is a **zigzag varint** (proto `sint32/64`, `int32/64`; Avro `int`/`long`; Thrift Compact `i32`/`i64`) | `[X] int` / `[X] long` | two-sided, clusters around zero |
-| the field is an **unsigned varint** (proto `uint32/64`) | `[A] uint` / `[A] ulong` | one-sided, clusters at the low end |
-| a **lower bound only**, unbounded above (ASN.1 `INTEGER (0..MAX)`, a counter, a sequence number) | `[A(min)]` | clusters at `min`, rare excursions up |
-| an **upper bound only**, or a value that hugs its ceiling (a remaining budget, a lease) | `[V(max)]` | clusters at `max`, rare excursions down |
-| a **hard range** (ASN.1 `INTEGER (a..b)`, a DSDL `uintN`, a CAN signal bit width, an LwM2M range) | `[MinMax(a, b)]` | uniform in range, bit-packed |
-| **fixed width by design** (proto `fixed32`, FlatBuffers scalars, a CAN raw field) | no attribute | varint would only cost more |
+| the author chose a **zigzag varint** (proto `sint32/64`, `int32/64`; Avro `int`/`long`; Thrift Compact `i32/i64`) | `[X]` | two-sided, clusters around zero |
+| the author chose an **unsigned varint** (proto `uint32/64`) | `[A]` | one-sided, clusters at the low end |
+| a **floor with no ceiling** — a counter, a sequence number, a length, ASN.1 `INTEGER (0..MAX)` | `[A(min)]` | clusters at `min`, rare excursions up |
+| a value that **hugs its ceiling** — a remaining budget, a lease, headroom | `[V(max)]` | clusters at `max`, rare excursions down |
+| a **delta, an offset, a rate, an error term** — anything centred on zero | `[X(amplitude)]` | two-sided, small either way |
+| a **hard range** — ASN.1 `INTEGER (a..b)`, a DSDL `uintN`, a CAN signal width, an LwM2M range, a percentage | `[MinMax(a, b)]` | uniform in range, bit-packed |
 
-Do not guess. `[A]`/`[V]`/`[X]` on a uniformly distributed field makes the wire *bigger*, and the generator
-rejects a span that is too narrow to pay off. Emit an attribute only where the source states the fact.
+**Check the arithmetic before emitting.** Varint wins only while the typical distance from the base stays under
+about two million; beyond 268 435 455 it always loses. So a latitude scaled by 1e7, a Unix timestamp in seconds, a
+monotonic uptime counter and a hash are all varint **losses** — not because the source stored them fixed-width, but
+because their values are systematically large. A span narrower than one byte is rejected by the generator and
+belongs in `[MinMax]` instead.
+
+**Where the physics is the developer's call, say so at the field, not in the README.** Varint is a deliberate
+decision taken after understanding the data, and a converter usually cannot take it. What a converter must not do
+is drop the question silently. Leave a comment on the field naming the candidate and the reason, so the decision
+is made where it belongs, with everything needed in front of the reader:
+
+```csharp
+// physics: airspeed error, centred on zero, typical |v| well under 1 000 → consider [X(2_000)]
+short airspeed_error;
+```
 
 ### 2. Map a concept to AdHoc's concept, not to a bag of metadata
 

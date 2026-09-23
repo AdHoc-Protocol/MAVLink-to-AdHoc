@@ -320,30 +320,37 @@ namespace org.mavlink {
             /**
             Latitude, expressed
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude, expressed
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             Altitude above home
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int relative_alt;
             /**
             Ground X Speed (Latitude, positive north)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vx;
             /**
             Ground Y Speed (Longitude, positive east)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vy;
             /**
             Ground Z Speed (Altitude, positive down)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vz;
             /**
             Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX
@@ -512,6 +519,7 @@ namespace org.mavlink {
             /**
             Timestamp (UNIX epoch time).
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_unix_usec;
             /**
             Timestamp (time since system boot).
@@ -531,10 +539,12 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             PING sequence
             */
+            // physics: floored at zero, values typically small - consider [A]
             uint seq;
             /**
             0: request ping from all receiving systems. If greater than 0: message is a ping response and number is the
@@ -747,6 +757,7 @@ namespace org.mavlink {
             /**
             Total number of onboard parameters
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort param_count;
             /**
             Index of this onboard parameter
@@ -798,6 +809,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             GPS fix type.
@@ -806,15 +818,18 @@ namespace org.mavlink {
             /**
             Latitude (WGS84, EGM96 ellipsoid)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude (WGS84, EGM96 ellipsoid)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude (MSL). Positive for up. Note that virtually all GPS modules provide the MSL altitude in addition to
             the WGS84 altitude.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX
@@ -827,6 +842,7 @@ namespace org.mavlink {
             /**
             GPS ground speed. If unknown, set to: UINT16_MAX
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s), Invalid("UINT16_MAX")] ushort vel;
             /**
             Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown,
@@ -840,22 +856,27 @@ namespace org.mavlink {
             /**
             Altitude (above WGS84, EGM96 ellipsoid). Positive for up.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm), ExtensionField] int alt_ellipsoid;
             /**
             Position uncertainty.
             */
+            // physics: floored at zero, values typically small - consider [A]
             [Units(SI_Unit.distance.mm), ExtensionField] uint h_acc;
             /**
             Altitude uncertainty.
             */
+            // physics: floored at zero, values typically small - consider [A]
             [Units(SI_Unit.distance.mm), ExtensionField] uint v_acc;
             /**
             Speed uncertainty.
             */
+            // physics: rate or vector component, centred on zero - consider [X]
             [Units(SI_Unit.distance.mm_s), ExtensionField] uint vel_acc;
             /**
             Heading / track uncertainty
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE5), ExtensionField] uint hdg_acc;
             /**
             Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use UINT16_MAX if this GPS is
@@ -910,42 +931,52 @@ namespace org.mavlink {
             /**
             X acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short xacc;
             /**
             Y acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short yacc;
             /**
             Z acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short zacc;
             /**
             Angular speed around X axis
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.angle.mrad_s)] short xgyro;
             /**
             Angular speed around Y axis
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.angle.mrad_s)] short ygyro;
             /**
             Angular speed around Z axis
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.angle.mrad_s)] short zgyro;
             /**
             X Magnetic field
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.magnetism.mgauss)] short xmag;
             /**
             Y Magnetic field
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.magnetism.mgauss)] short ymag;
             /**
             Z Magnetic field
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.magnetism.mgauss)] short zmag;
             /**
             Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC), ExtensionField] short temperature;
         }
 
@@ -959,6 +990,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             X acceleration (raw)
@@ -1003,6 +1035,7 @@ namespace org.mavlink {
             /**
             Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC), ExtensionField] short temperature;
         }
 
@@ -1016,6 +1049,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Absolute pressure (raw)
@@ -1056,10 +1090,12 @@ namespace org.mavlink {
             /**
             Absolute pressure temperature
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC)] short temperature;
             /**
             Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC), Invalid("0"), ExtensionField] short temperature_press_diff;
         }
 
@@ -1300,6 +1336,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] uint time_usec;
             /**
             Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.
@@ -1450,6 +1487,7 @@ namespace org.mavlink {
             /**
             Sequence
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort seq;
             /**
             The coordinate system of the waypoint.
@@ -1520,6 +1558,7 @@ namespace org.mavlink {
             /**
             Sequence
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort seq;
             /**
             Mission type.
@@ -1553,6 +1592,7 @@ namespace org.mavlink {
             /**
             Sequence
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort seq;
         }
 
@@ -1567,6 +1607,7 @@ namespace org.mavlink {
             /**
             Sequence
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort seq;
             /**
             Total number of mission items on vehicle (on last item, sequence == total). If the autopilot stores its home
@@ -1638,6 +1679,7 @@ namespace org.mavlink {
             /**
             Number of mission items in the sequence
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort count;
             /**
             Mission type.
@@ -1684,6 +1726,7 @@ namespace org.mavlink {
             /**
             Sequence
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort seq;
         }
 
@@ -1738,19 +1781,23 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int latitude;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int longitude;
             /**
             Altitude (MSL). Positive for up.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int altitude;
             /**
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us), ExtensionField] ulong time_usec;
         }
 
@@ -1763,19 +1810,23 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int latitude;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int longitude;
             /**
             Altitude (MSL). Positive for up.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int altitude;
             /**
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us), ExtensionField] ulong time_usec;
         }
 
@@ -1845,6 +1896,7 @@ namespace org.mavlink {
             /**
             Sequence
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort seq;
             /**
             Mission type.
@@ -1942,6 +1994,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation)
@@ -2018,6 +2071,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Class id of the estimator this estimate originated from.
@@ -2026,18 +2080,22 @@ namespace org.mavlink {
             /**
             Latitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude in meters above MSL
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             Altitude above ground
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int relative_alt;
             /**
             Ground X Speed (Latitude)
@@ -2069,6 +2127,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Class id of the estimator this estimate originated from.
@@ -2483,6 +2542,7 @@ namespace org.mavlink {
             Waypoint ID (sequence number). Starts at zero. Increases monotonically for each waypoint, no gaps in the
             sequence (0,1,2,3,4).
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort seq;
             /**
             The coordinate system of the waypoint.
@@ -3037,10 +3097,12 @@ namespace org.mavlink {
             /**
             Latitude in WGS84 frame
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat_int;
             /**
             Longitude in WGS84 frame
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon_int;
             /**
             Altitude (MSL, Relative to home, or AGL - depending on frame)
@@ -3104,10 +3166,12 @@ namespace org.mavlink {
             /**
             Latitude in WGS84 frame
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat_int;
             /**
             Longitude in WGS84 frame
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon_int;
             /**
             Altitude (MSL, AGL or relative to home altitude, depending on frame)
@@ -3196,6 +3260,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Roll angle
@@ -3224,38 +3289,47 @@ namespace org.mavlink {
             /**
             Latitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             Ground X Speed (Latitude)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vx;
             /**
             Ground Y Speed (Longitude)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vy;
             /**
             Ground Z Speed (Altitude)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vz;
             /**
             X acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short xacc;
             /**
             Y acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short yacc;
             /**
             Z acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short zacc;
         }
 
@@ -3268,6 +3342,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Control output -1 .. 1
@@ -3322,6 +3397,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             RC channel 1 value
@@ -3387,6 +3463,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Control outputs -1 .. 1. Channel assignment depends on the simulated hardware.
@@ -3411,6 +3488,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Sensor ID
@@ -3628,6 +3706,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             X acceleration
@@ -3700,6 +3779,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Sensor ID
@@ -3709,6 +3789,7 @@ namespace org.mavlink {
             Integration time. Divide integrated_x and integrated_y by the integration time to obtain average flow. The
             integration time also indicates the.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] uint integration_time_us;
             /**
             Flow around X axis (Sensor RH rotation about the X axis induces a positive flow. Sensor linear motion along
@@ -3735,6 +3816,7 @@ namespace org.mavlink {
             /**
             Temperature
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC)] short temperature;
             /**
             Optical flow quality / confidence. 0: no valid flow, 255: maximum quality
@@ -3743,6 +3825,7 @@ namespace org.mavlink {
             /**
             Time since the distance was sampled.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] uint time_delta_distance_us;
             /**
             Distance to the center of the flow field. Positive value (including zero): distance known. Negative value:
@@ -3760,6 +3843,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             X acceleration
@@ -3916,11 +4000,13 @@ namespace org.mavlink {
             Latitude (higher precision). If 0, recipients should use the lat field value (otherwise this field is
             preferred).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("0"), ExtensionField] int lat_int;
             /**
             Longitude (higher precision). If 0, recipients should use the lon field value (otherwise this field is
             preferred).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("0"), ExtensionField] int lon_int;
         }
 
@@ -4034,10 +4120,12 @@ namespace org.mavlink {
             Timestamp for image frame (UNIX Epoch time or time since system boot). The receiving end can infer timestamp
             format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Image frame sequence
             */
+            // physics: floored at zero, values typically small - consider [A]
             uint seq;
         }
 
@@ -4052,6 +4140,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value of this field unless it is at
@@ -4061,14 +4150,17 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude (MSL). Positive for up.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX
@@ -4081,18 +4173,22 @@ namespace org.mavlink {
             /**
             GPS ground speed. If unknown, set to: UINT16_MAX
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s), Invalid("UINT16_MAX")] ushort vel;
             /**
             GPS velocity in north direction in earth-fixed NED frame
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vn;
             /**
             GPS velocity in east direction in earth-fixed NED frame
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short ve;
             /**
             GPS velocity in down direction in earth-fixed NED frame
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vd;
             /**
             Course over ground (NOT heading, but direction of movement), 0.0..359.99 degrees. If unknown, set to:
@@ -4122,6 +4218,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Sensor ID
@@ -4131,6 +4228,7 @@ namespace org.mavlink {
             Integration time. Divide integrated_x and integrated_y by the integration time to obtain average flow. The
             integration time also indicates the.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] uint integration_time_us;
             /**
             Flow in radians around X axis (Sensor RH rotation about the X axis induces a positive flow. Sensor linear
@@ -4157,6 +4255,7 @@ namespace org.mavlink {
             /**
             Temperature
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC)] short temperature;
             /**
             Optical flow quality / confidence. 0: no valid flow, 255: maximum quality
@@ -4165,6 +4264,7 @@ namespace org.mavlink {
             /**
             Time since the distance was sampled.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] uint time_delta_distance_us;
             /**
             Distance to the center of the flow field. Positive value (including zero): distance known. Negative value:
@@ -4183,6 +4283,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Vehicle attitude expressed as normalized quaternion in w, x, y, z order (with 1 0 0 0 being the null-rotation)
@@ -4203,46 +4304,57 @@ namespace org.mavlink {
             /**
             Latitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             Ground X Speed (Latitude)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vx;
             /**
             Ground Y Speed (Longitude)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vy;
             /**
             Ground Z Speed (Altitude)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vz;
             /**
             Indicated airspeed
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] ushort ind_airspeed;
             /**
             True airspeed
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] ushort true_airspeed;
             /**
             X acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short xacc;
             /**
             Y acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short yacc;
             /**
             Z acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short zacc;
         }
 
@@ -4259,42 +4371,52 @@ namespace org.mavlink {
             /**
             X acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short xacc;
             /**
             Y acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short yacc;
             /**
             Z acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short zacc;
             /**
             Angular speed around X axis
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.angle.mrad_s)] short xgyro;
             /**
             Angular speed around Y axis
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.angle.mrad_s)] short ygyro;
             /**
             Angular speed around Z axis
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.angle.mrad_s)] short zgyro;
             /**
             X Magnetic field
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.magnetism.mgauss)] short xmag;
             /**
             Y Magnetic field
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.magnetism.mgauss)] short ymag;
             /**
             Z Magnetic field
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.magnetism.mgauss)] short zmag;
             /**
             Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC), Invalid("0"), ExtensionField] short temperature;
         }
 
@@ -4342,10 +4464,12 @@ namespace org.mavlink {
             /**
             High log number
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort last_log_num;
             /**
             UTC timestamp of log since 1970, or 0 if not available
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.s), Invalid("0")] uint time_utc;
             /**
             Size of the log (may be approximate)
@@ -4377,6 +4501,7 @@ namespace org.mavlink {
             /**
             Number of bytes
             */
+            // physics: floored at zero, values typically small - consider [A]
             [Units(SI_Unit.digital.bytes)] uint count;
         }
 
@@ -4466,6 +4591,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             GPS fix type.
@@ -4474,14 +4600,17 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude (MSL). Positive for up.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             GPS HDOP horizontal dilution of position (unitless * 100). If unknown, set to: UINT16_MAX
@@ -4494,6 +4623,7 @@ namespace org.mavlink {
             /**
             GPS ground speed. If unknown, set to: UINT16_MAX
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s), Invalid("UINT16_MAX")] ushort vel;
             /**
             Course over ground (NOT heading, but direction of movement): 0.0..359.99 degrees. If unknown, set to:
@@ -4520,22 +4650,27 @@ namespace org.mavlink {
             /**
             Altitude (above WGS84, EGM96 ellipsoid). Positive for up.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm), ExtensionField] int alt_ellipsoid;
             /**
             Position uncertainty.
             */
+            // physics: floored at zero, values typically small - consider [A]
             [Units(SI_Unit.distance.mm), ExtensionField] uint h_acc;
             /**
             Altitude uncertainty.
             */
+            // physics: floored at zero, values typically small - consider [A]
             [Units(SI_Unit.distance.mm), ExtensionField] uint v_acc;
             /**
             Speed uncertainty.
             */
+            // physics: rate or vector component, centred on zero - consider [X]
             [Units(SI_Unit.distance.mm_s), ExtensionField] uint vel_acc;
             /**
             Heading / track uncertainty
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE5), ExtensionField] uint hdg_acc;
         }
 
@@ -4607,6 +4742,7 @@ namespace org.mavlink {
             /**
             Time since boot of last baseline message received.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.ms)] uint time_last_baseline_ms;
             /**
             Identification of connected RTK receiver.
@@ -4639,18 +4775,22 @@ namespace org.mavlink {
             /**
             Current baseline in ECEF x or NED north component.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int baseline_a_mm;
             /**
             Current baseline in ECEF y or NED east component.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int baseline_b_mm;
             /**
             Current baseline in ECEF z or NED down component.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int baseline_c_mm;
             /**
             Current estimate of baseline accuracy.
             */
+            // physics: floored at zero, values typically small - consider [A]
             uint accuracy;
             /**
             Current number of integer ambiguity hypotheses.
@@ -4666,6 +4806,7 @@ namespace org.mavlink {
             /**
             Time since boot of last baseline message received.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.ms)] uint time_last_baseline_ms;
             /**
             Identification of connected RTK receiver.
@@ -4698,18 +4839,22 @@ namespace org.mavlink {
             /**
             Current baseline in ECEF x or NED north component.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int baseline_a_mm;
             /**
             Current baseline in ECEF y or NED east component.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int baseline_b_mm;
             /**
             Current baseline in ECEF z or NED down component.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int baseline_c_mm;
             /**
             Current estimate of baseline accuracy.
             */
+            // physics: floored at zero, values typically small - consider [A]
             uint accuracy;
             /**
             Current number of integer ambiguity hypotheses.
@@ -4730,42 +4875,52 @@ namespace org.mavlink {
             /**
             X acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short xacc;
             /**
             Y acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short yacc;
             /**
             Z acceleration
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.force.mG)] short zacc;
             /**
             Angular speed around X axis
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.angle.mrad_s)] short xgyro;
             /**
             Angular speed around Y axis
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.angle.mrad_s)] short ygyro;
             /**
             Angular speed around Z axis
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.angle.mrad_s)] short zgyro;
             /**
             X Magnetic field
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.magnetism.mgauss)] short xmag;
             /**
             Y Magnetic field
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.magnetism.mgauss)] short ymag;
             /**
             Z Magnetic field
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.magnetism.mgauss)] short zmag;
             /**
             Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC), Invalid("0"), ExtensionField] short temperature;
         }
 
@@ -4815,6 +4970,7 @@ namespace org.mavlink {
             /**
             sequence number (starting with 0 on every transmission)
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort seqnr;
             /**
             image data bytes
@@ -4894,10 +5050,12 @@ namespace org.mavlink {
             /**
             Latitude of SW corner of first grid
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude of SW corner of first grid
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Grid spacing
@@ -4918,10 +5076,12 @@ namespace org.mavlink {
             /**
             Latitude of SW corner of first grid
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude of SW corner of first grid
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Grid spacing
@@ -4946,10 +5106,12 @@ namespace org.mavlink {
             /**
             Latitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
         }
 
@@ -4962,10 +5124,12 @@ namespace org.mavlink {
             /**
             Latitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             grid spacing (zero if terrain at this location unavailable)
@@ -5009,10 +5173,12 @@ namespace org.mavlink {
             /**
             Absolute pressure temperature
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC)] short temperature;
             /**
             Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC), Invalid("0"), ExtensionField] short temperature_press_diff;
         }
 
@@ -5025,6 +5191,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
@@ -5059,6 +5226,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Actuator group. The "_mlx" indicates this is a multi-instance message and a MAVLink parser should use this
@@ -5091,6 +5259,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Actuator group. The "_mlx" indicates this is a multi-instance message and a MAVLink parser should use this
@@ -5115,6 +5284,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             This altitude measure is initialized on system boot and monotonic (it is never reset, but represents the local
@@ -5201,10 +5371,12 @@ namespace org.mavlink {
             /**
             Absolute pressure temperature
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC)] short temperature;
             /**
             Differential pressure temperature (0, if not available). Report values of 0 (or 1) as 1 cdegC.
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC), Invalid("0"), ExtensionField] short temperature_press_diff;
         }
 
@@ -5224,10 +5396,12 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude (MSL)
@@ -5269,6 +5443,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             X acceleration in body frame
@@ -5357,6 +5532,7 @@ namespace org.mavlink {
             /**
             Temperature of the battery. INT16_MAX for unknown temperature.
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC), Invalid("INT16_MAX")] short temperature;
             /**
             Battery voltage of cells 1 to 10 (see voltages_ext for cells 11-14). Cells in this field above the valid cell
@@ -5375,6 +5551,7 @@ namespace org.mavlink {
             /**
             Consumed charge, -1: autopilot does not provide consumption estimate
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.electricity.mAh), Invalid("-1")] int current_consumed;
             /**
             Consumed energy, -1: autopilot does not provide energy consumption estimate
@@ -5387,6 +5564,7 @@ namespace org.mavlink {
             /**
             Remaining battery time, 0: autopilot does not provide remaining battery time estimate
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.s), Invalid("0"), ExtensionField] int time_remaining;
             /**
             State for extent of discharge, provided by autopilot for warning or external reactions
@@ -5418,6 +5596,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             The ID of the target if multiple targets are present
@@ -5486,6 +5665,7 @@ namespace org.mavlink {
             /**
             Number of fence breaches.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort breach_count;
             /**
             Last breach type.
@@ -5681,6 +5861,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Bitmap indicating which EKF outputs are valid.
@@ -5730,6 +5911,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Wind in North (NED) direction (NAN if unknown)
@@ -5775,6 +5957,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             ID of the GPS for multiple GPS inputs
@@ -5787,10 +5970,12 @@ namespace org.mavlink {
             /**
             GPS time (from start of GPS week)
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.ms)] uint time_week_ms;
             /**
             GPS week number
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             ushort time_week;
             /**
             GNSS fix type
@@ -5799,10 +5984,12 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude (MSL). Positive for up.
@@ -5916,10 +6103,12 @@ namespace org.mavlink {
             /**
             Latitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int latitude;
             /**
             Longitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int longitude;
             /**
             Altitude above mean sea level
@@ -6004,10 +6193,12 @@ namespace org.mavlink {
             /**
             Latitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int latitude;
             /**
             Longitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int longitude;
             /**
             Altitude above mean sea level
@@ -6076,6 +6267,7 @@ namespace org.mavlink {
             /**
             Current waypoint number
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort wp_num;
             /**
             Bitmap of failure flags.
@@ -6104,6 +6296,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Vibration levels on X-axis
@@ -6149,14 +6342,17 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int latitude;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int longitude;
             /**
             Altitude (MSL). Positive for up.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int altitude;
             /**
             Local X position of this position in the local coordinate frame (NED)
@@ -6202,6 +6398,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us), ExtensionField] ulong time_usec;
         }
 
@@ -6229,14 +6426,17 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int latitude;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int longitude;
             /**
             Altitude (MSL). Positive for up.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int altitude;
             /**
             Local X position of this position in the local coordinate frame (NED)
@@ -6280,6 +6480,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us), ExtensionField] ulong time_usec;
         }
 
@@ -6329,10 +6530,12 @@ namespace org.mavlink {
             /**
             Latitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lat;
             /**
             Longitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lon;
             /**
             ADSB altitude type.
@@ -6341,6 +6544,7 @@ namespace org.mavlink {
             /**
             Altitude (ASL)
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm), Invalid("INT32_MAX")] int altitude;
             /**
             Course over ground
@@ -6349,10 +6553,12 @@ namespace org.mavlink {
             /**
             The horizontal velocity
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s), Invalid("UINT16_MAX")] ushort hor_velocity;
             /**
             The vertical velocity. Positive is up
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s), Invalid("INT16_MAX")] short ver_velocity;
             /**
             The callsign, 8+null
@@ -6486,6 +6692,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             x
@@ -6857,6 +7064,7 @@ namespace org.mavlink {
             /**
             Total number of images captured ('forever', or until reset using MAV_CMD_STORAGE_FORMAT).
             */
+            // physics: floored at zero, values typically small - consider [A]
             [ExtensionField] int image_count;
             /**
             Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera
@@ -6885,6 +7093,7 @@ namespace org.mavlink {
             /**
             Timestamp (time since UNIX epoch) in UTC. 0 for unknown.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us), Invalid("0")] ulong time_utc;
             /**
             Camera id of a non-MAVLink camera attached to an autopilot (1-6).  0 if the component is a MAVLink camera
@@ -6894,18 +7103,22 @@ namespace org.mavlink {
             /**
             Latitude where image was taken
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude where capture was taken
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude (MSL) where image was taken
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             Altitude above ground
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int relative_alt;
             /**
             Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
@@ -6941,10 +7154,12 @@ namespace org.mavlink {
             /**
             Timestamp at arming (since system boot). Set to 0 on boot. Set value on arming. Note, field is misnamed UTC.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us), Invalid("0")] ulong arming_time_utc;
             /**
             Timestamp at takeoff (since system boot). Set to 0 at boot and on arming. Note, field is misnamed UTC.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us), Invalid("0")] ulong takeoff_time_utc;
             /**
             Flight number. Note, field is misnamed UUID.
@@ -7002,6 +7217,7 @@ namespace org.mavlink {
             /**
             sequence number (can wrap)
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort sequence;
             /**
             data length
@@ -7034,6 +7250,7 @@ namespace org.mavlink {
             /**
             sequence number (can wrap)
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort sequence;
             /**
             data length
@@ -7066,6 +7283,7 @@ namespace org.mavlink {
             /**
             sequence number (must match the one in LOGGING_DATA_ACKED)
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort sequence;
         }
 
@@ -7191,27 +7409,33 @@ namespace org.mavlink {
             /**
             Latitude of camera (INT32_MAX if unknown).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lat_camera;
             /**
             Longitude of camera (INT32_MAX if unknown).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lon_camera;
             /**
             Altitude (MSL) of camera (INT32_MAX if unknown).
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm), Invalid("INT32_MAX")] int alt_camera;
             /**
             Latitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lat_image;
             /**
             Longitude of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with horizon).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lon_image;
             /**
             Altitude (MSL) of center of image (INT32_MAX if unknown, INT32_MIN if at infinity, not intersecting with
             horizon).
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm), Invalid("INT32_MAX")] int alt_image;
             /**
             Quaternion of camera orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
@@ -7305,10 +7529,12 @@ namespace org.mavlink {
             /**
             Latitude of tracked object
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude of tracked object
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude of tracked object(AMSL, WGS84)
@@ -7911,6 +8137,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Counter of data packets received.
@@ -7959,6 +8186,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Reported motor RPM from each ESC (negative for reverse rotation).
@@ -7990,6 +8218,7 @@ namespace org.mavlink {
             /**
             Temperature.
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC), Invalid("INT16_MAX")] short temperature;
             /**
             Raw differential pressure.
@@ -8023,12 +8252,14 @@ namespace org.mavlink {
             Timestamp of message transmission (UNIX Epoch time or time since system boot). The receiving end can infer
             timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             The time spent in processing the sensor data that is the basis for this position. The recipient can use this
             to improve time alignment of the data. This is the time between measurement (e.g. camera exposure time) and
             transmission of this message. Set to NaN if not known.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] uint processing_time;
             /**
             Source of position/estimate (such as GNSS, estimator, etc.)
@@ -8041,10 +8272,12 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lat;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lon;
             /**
             Altitude (WGS84 elipsoid), preferred if available
@@ -8133,10 +8366,12 @@ namespace org.mavlink {
             /**
             Latitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lat;
             /**
             Longitude
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("INT32_MAX")] int lon;
             /**
             Course over ground
@@ -8149,6 +8384,7 @@ namespace org.mavlink {
             /**
             Speed over ground
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s), Invalid("UINT16_MAX")] ushort velocity;
             /**
             Turn rate, 0.1 degrees per second
@@ -8211,6 +8447,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Time since the start-up of the node.
@@ -8249,6 +8486,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Time since the start-up of the node.
@@ -8349,6 +8587,7 @@ namespace org.mavlink {
             /**
             Total number of parameters
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort param_count;
             /**
             Index of this parameter
@@ -8423,6 +8662,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Class id of the distance sensor type.
@@ -8476,6 +8716,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Coordinate frame of reference for the pose data.
@@ -8565,6 +8806,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Number of valid points (up-to 5 waypoints are possible)
@@ -8632,6 +8874,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Number of valid control points (up-to 5 points are possible)
@@ -8755,6 +8998,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong timestamp;
             /**
             Timestamp of the last successful sbd session. The receiving end can infer timestamp format (since 1.1.1970 or
@@ -8856,6 +9100,7 @@ namespace org.mavlink {
             /**
             Time of applicability of position (microseconds since UNIX epoch).
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time;
             /**
             Unique UAS ID.
@@ -8864,54 +9109,67 @@ namespace org.mavlink {
             /**
             Latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lat;
             /**
             Longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int lon;
             /**
             Altitude (WGS84)
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int alt;
             /**
             Altitude above ground
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int relative_alt;
             /**
             Ground X speed (latitude, positive north)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vx;
             /**
             Ground Y speed (longitude, positive east)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vy;
             /**
             Ground Z speed (altitude, positive down)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short vz;
             /**
             Horizontal position uncertainty (standard deviation)
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             [Units(SI_Unit.distance.mm)] ushort h_acc;
             /**
             Altitude uncertainty (standard deviation)
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             [Units(SI_Unit.distance.mm)] ushort v_acc;
             /**
             Speed uncertainty (standard deviation)
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] ushort vel_acc;
             /**
             Next waypoint, latitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int next_lat;
             /**
             Next waypoint, longitude (WGS84)
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7)] int next_lon;
             /**
             Next waypoint, altitude (WGS84)
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.distance.mm)] int next_alt;
             /**
             Time until next update. Set to 0 if unknown or in data driven mode.
@@ -8969,6 +9227,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Name, for human-friendly display in a Ground Control Station
@@ -8993,6 +9252,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Radius of the orbit circle. Positive values orbit clockwise, negative values orbit counter-clockwise.
@@ -9041,14 +9301,17 @@ namespace org.mavlink {
             /**
             Capacity when full according to manufacturer, -1: field not provided.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.electricity.mAh), Invalid("-1")] int capacity_full_specification;
             /**
             Capacity when full (accounting for battery degradation), -1: field not provided.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.electricity.mAh), Invalid("-1")] int capacity_full;
             /**
             Charge/discharge cycle count. UINT16_MAX: field not provided.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             [Invalid("UINT16_MAX")] ushort cycle_count;
             /**
             Serial number in ASCII characters, 0 terminated. All 0: field not provided.
@@ -9086,10 +9349,12 @@ namespace org.mavlink {
             /**
             Maximum pack discharge current. 0: field not provided.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.electricity.mA), Invalid("0"), ExtensionField] uint discharge_maximum_current;
             /**
             Maximum pack discharge burst current. 0: field not provided.
             */
+            // physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is
             [Units(SI_Unit.electricity.mA), Invalid("0"), ExtensionField] uint discharge_maximum_burst_current;
             /**
             Manufacture date (DD/MM/YYYY) in ASCII characters, 0 terminated. All 0: field not provided.
@@ -9108,6 +9373,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Major axis radius of the figure eight. Positive: orbit the north circle clockwise. Negative: orbit the north
@@ -9227,6 +9493,7 @@ namespace org.mavlink {
             Lifetime count of the number of charge/discharge cycles (https://en.wikipedia.org/wiki/Charge_cycle).
             UINT16_MAX: field not provided.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             [Invalid("UINT16_MAX")] ushort cycle_count;
             /**
             Battery weight. 0: field not provided.
@@ -9321,6 +9588,7 @@ namespace org.mavlink {
             /**
             The temperature of the rectifier or power converter. INT16_MAX: field not provided.
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.degC), Invalid("INT16_MAX")] short rectifier_temperature;
             /**
             The target battery current. Positive for out. Negative for in. NaN: field not provided
@@ -9329,6 +9597,7 @@ namespace org.mavlink {
             /**
             The temperature of the mechanical motor, fuel cell core or generator. INT16_MAX: field not provided.
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.degC), Invalid("INT16_MAX")] short generator_temperature;
             /**
             Seconds this generator has run since it was rebooted. UINT32_MAX: field not provided.
@@ -9338,6 +9607,7 @@ namespace org.mavlink {
             Seconds until this generator requires maintenance.  A negative value indicates maintenance is past-due.
             INT32_MAX: field not provided.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.s), Invalid("INT32_MAX")] int time_until_maintenance;
         }
 
@@ -9350,6 +9620,7 @@ namespace org.mavlink {
             /**
             Timestamp (since system boot).
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Active outputs
@@ -9553,6 +9824,7 @@ namespace org.mavlink {
             Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since
             1.1.1970 or since system boot) by checking for the magnitude of the number.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Time since system boot.
@@ -9692,6 +9964,7 @@ namespace org.mavlink {
             /**
             Date of manufacture as a UNIX Epoch time (since 1.1.1970) in seconds.
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.s), Invalid("0")] uint time_manufacture_s;
             /**
             Name of the component vendor. Needs to be zero terminated. The field is optional and can be empty/all zeros.
@@ -9820,6 +10093,7 @@ namespace org.mavlink {
             /**
             Sequence number.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort sequence;
             /**
             Log levels: 4 bits MSB: internal (for logging purposes), 4 bits LSB: external. Levels: Emergency = 0, Alert =
@@ -9842,6 +10116,7 @@ namespace org.mavlink {
             /**
             Sequence number.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort sequence;
             /**
             Flag bitset.
@@ -9868,10 +10143,12 @@ namespace org.mavlink {
             /**
             First sequence number of the requested event.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort first_sequence;
             /**
             Last sequence number of the requested event.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort last_sequence;
         }
 
@@ -9892,10 +10169,12 @@ namespace org.mavlink {
             /**
             Sequence number.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort sequence;
             /**
             Oldest Sequence number that is still available after the sequence set in REQUEST_EVENT.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort sequence_oldest_available;
             /**
             Error reason.
@@ -10051,6 +10330,7 @@ namespace org.mavlink {
             /**
             Timestamp (synced to UNIX time or since system boot).
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Number of wheels reported.
@@ -10072,6 +10352,7 @@ namespace org.mavlink {
             /**
             Timestamp (synced to UNIX time or since system boot).
             */
+            // physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here
             [Units(SI_Unit.time.us)] ulong time_usec;
             /**
             Length of line released. NaN if unknown
@@ -10097,6 +10378,7 @@ namespace org.mavlink {
             /**
             Temperature of the motor. INT16_MAX if unknown
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.degC), Invalid("INT16_MAX")] short temperature;
             /**
             Status flags
@@ -10172,19 +10454,23 @@ namespace org.mavlink {
             /**
             Ground speed. Positive only. If unknown: 25500 cm/s. If speed is larger than 25425 cm/s, use 25425 cm/s.
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] ushort speed_horizontal;
             /**
             The vertical speed. Up is positive. If unknown: 6300 cm/s. If speed is larger than 6200 cm/s, use 6200 cm/s.
             If lower than -6200 cm/s, use -6200 cm/s.
             */
+            // physics: rate or vector component, centred on zero - [X] would fit, though the type is already narrow
             [Units(SI_Unit.distance.cm_s)] short speed_vertical;
             /**
             Current latitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("0")] int latitude;
             /**
             Current longitude of the unmanned aircraft. If unknown: 0 (both Lat/Lon).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("0")] int longitude;
             /**
             The altitude calculated from the barometric pressure. Reference is against 29.92inHg or 1013.2mb. If unknown:
@@ -10347,14 +10633,17 @@ namespace org.mavlink {
             /**
             Latitude of the operator. If unknown: 0 (both Lat/Lon).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("0")] int operator_latitude;
             /**
             Longitude of the operator. If unknown: 0 (both Lat/Lon).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("0")] int operator_longitude;
             /**
             Number of aircraft in the area, group or formation (default 1). Used only for swarms/multiple UA.
             */
+            // physics: floored at zero, values typically small - [A] would fit, though the type is already narrow
             ushort area_count;
             /**
             Radius of the cylindrical area of the group or formation (default 0). Used only for swarms/multiple UA.
@@ -10487,10 +10776,12 @@ namespace org.mavlink {
             /**
             Latitude of the operator. If unknown: 0 (both Lat/Lon).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("0")] int operator_latitude;
             /**
             Longitude of the operator. If unknown: 0 (both Lat/Lon).
             */
+            // physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here
             [Units(SI_Unit.angle.degE7), Invalid("0")] int operator_longitude;
             /**
             Geodetic altitude of the operator relative to WGS84. If unknown: -1000 m.
@@ -10514,6 +10805,7 @@ namespace org.mavlink {
             /**
             Temperature
             */
+            // physics: temperature, clusters around ambient - [X] would fit, though the type is already narrow
             [Units(SI_Unit.temperature.cdegC)] short temperature;
             /**
             Humidity

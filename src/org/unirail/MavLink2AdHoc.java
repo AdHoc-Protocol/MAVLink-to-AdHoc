@@ -503,7 +503,56 @@ public class MavLink2AdHoc {
 				}
 				if (0 < f.len) type += "[]";
 			}
-			return (attrs.isEmpty() ? "" : "[" + String.join(", ", attrs) + "] ") + type + " " + brush(f.name) + ";" + comment;
+			String decl = (attrs.isEmpty() ? "" : "[" + String.join(", ", attrs) + "] ") + type + " " + brush(f.name) + ";" + comment;
+			String hint = physics(f, type);
+			return hint == null ? decl : hint + '\n' + I3 + decl;
+		}
+
+		/**
+		 * A note about the field's physics, or null when MAVLink says nothing usable.
+		 *
+		 * <p>Whether a number should be varint-encoded is decided by where its values sit, never by how MAVLink
+		 * packs its own frame - AdHoc lays out its own packet. MAVLink states units and names but no
+		 * distribution, so the converter does not choose; it writes down what the units imply and leaves the
+		 * decision on the field, where the person who knows the data will be reading.
+		 *
+		 * <p>Only integers wider than one byte are worth a note: a byte has no leading groups to drop, and the
+		 * attributes do not apply to floats at all.
+		 */
+		static String physics(Field f, String type) {
+			// An array, an enum-typed field, or a field the converter already lifted into a Duration alias needs no note.
+			if (0 < f.len || f.enumRef != null || ELAPSED_ALIAS.containsKey(f.name)) return null;
+			boolean wide = switch (f.type) {
+				case "uint16_t", "int16_t", "uint32_t", "int32_t", "uint64_t", "int64_t" -> true;
+				default -> false;
+			};
+			if (!wide) return null;
+			boolean big32 = f.type.startsWith("uint32") || f.type.startsWith("int32")
+			                || f.type.startsWith("uint64") || f.type.startsWith("int64");
+			String u = f.units == null ? "" : f.units;
+			String n = f.name.toLowerCase();
+
+			// Systematically large values: varint always loses past 268 435 455, so say so rather than stay silent.
+			if (u.equals("degE7") || u.equals("degE5"))
+				return "// physics: scaled degrees, values around 5.6e8 - a varint attribute would COST a byte here";
+			if (n.startsWith("time_") || n.endsWith("_utc") || u.equals("us") && n.contains("time"))
+				return "// physics: monotonic timestamp, systematically large - a varint attribute would COST a byte here";
+
+			// Two-sided quantities centred on zero.
+			if (u.equals("rad/s") || u.equals("mrad/s") || u.equals("deg/s") || u.equals("cdeg/s") || u.equals("ddeg/s")
+			    || u.equals("rad") || u.equals("m/s") || u.equals("cm/s") || u.equals("dm/s") || u.equals("mm/s")
+			    || u.equals("m/s/s") || u.equals("mG") || u.equals("mT") || u.equals("mgauss") || u.equals("gauss"))
+				return "// physics: rate or vector component, centred on zero" + (big32 ? " - consider [X]" : " - [X] would fit, though the type is already narrow");
+			if (u.equals("degC") || u.equals("cdegC") || u.equals("K"))
+				return "// physics: temperature, clusters around ambient" + (big32 ? " - consider [X]" : " - [X] would fit, though the type is already narrow");
+
+			// One-sided quantities floored at zero.
+			if (n.endsWith("_acc") || n.contains("accuracy") || n.endsWith("_count") || n.endsWith("_cnt")
+			    || n.equals("count") || n.endsWith("_num") || n.contains("seq"))
+				return "// physics: floored at zero, values typically small" + (big32 ? " - consider [A]" : " - [A] would fit, though the type is already narrow");
+			if (big32 && (u.equals("mm") || u.equals("cm") || u.equals("mV") || u.equals("mA") || u.equals("mAh")))
+				return "// physics: small magnitude in a 32-bit field - consider [A] if never negative, [X] if it is";
+			return null;
 		}
 
 		// ───────────────────────────── enums ─────────────────────────────
